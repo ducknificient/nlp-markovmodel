@@ -11,7 +11,8 @@ import (
 )
 
 type Configuration struct {
-	Corpuspath []string `json:"corpuspath"`
+	TrainingCorpuspath []string `json:"training_corpuspath"`
+	TestingCorpuspath  []string `json:"testing_corpuspath"`
 }
 
 var (
@@ -49,7 +50,7 @@ func main() {
 		TransitionData: make([]MarkovTransition, 0),
 	}
 
-	for _, path := range Conf.Corpuspath {
+	for _, path := range Conf.TrainingCorpuspath {
 
 		corpora, err := GetCorpora(path)
 		if err != nil {
@@ -68,6 +69,8 @@ func main() {
 			if len(line) > 0 { // berarti ada kalimat
 				/* start sentence*/
 				previous = "<s>"
+				model.Context[previous]++
+
 				// remove first tab
 				line = strings.Replace(line, "\t", "", -1)
 				//fmt.Printf("%v. %v. %v\n", i, len(line), line)
@@ -155,10 +158,10 @@ func main() {
 			// Print the information
 			if Context[tag] == 0 {
 				EmissionProbabilities = 0
-				fmt.Printf("T %v:%v", key, EmissionProbabilities)
+				fmt.Printf("E %v:%v", key, EmissionProbabilities)
 			} else {
 				EmissionProbabilities = value / Context[tag]
-				fmt.Printf("T %v:%v", key, EmissionProbabilities)
+				fmt.Printf("E %v:%v", key, EmissionProbabilities)
 			}
 			td := MarkovEmission{
 				POSKey:        key,
@@ -172,6 +175,40 @@ func main() {
 			fmt.Printf("\n")
 		}
 	}
+
+	// for _, path := range Conf.TestingCorpuspath {
+
+	// 	corpora, err := GetCorpora(path)
+	// 	if err != nil {
+	// 		err = errors.New(fmt.Sprintf("corpora: %v is error. %v", path, err.Error()))
+	// 		// skip corpora
+	// 		fmt.Println(err.Error())
+	// 	}
+	// 	defer corpora.Close()
+
+	// 	/* open new scanner for reading each line  */
+	// 	scanner := bufio.NewScanner(corpora)
+	// 	for scanner.Scan() {
+	// 		line = scanner.Text()
+
+	// 		/* check if line is not null  */
+	// 		if len(line) > 0 { // berarti ada kalimat
+	// 			/* start sentence*/
+
+	// 			// remove first tab
+	// 			line = strings.Replace(line, "\t", "", -1)
+	// 			//fmt.Printf("%v. %v. %v\n", i, len(line), line)
+
+	// 			// split line into word tags
+	// 			wordtags := strings.Split(line, " ")
+
+	// 			fmt.Printf("\n")
+	// 		}
+	// 	}
+	// 	if err := scanner.Err(); err != nil {
+	// 		fmt.Fprintln(os.Stderr, "reading standard input:", err)
+	// 	}
+	// }
 
 	// Marshal the struct to JSON
 	jsonData, err := json.Marshal(model.TransitionData)

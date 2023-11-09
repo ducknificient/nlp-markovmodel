@@ -1,5 +1,5 @@
 {
-    "corpuspath":[
+    "training_corpuspath":[
         "./brown/ca01",
         "./brown/ca02",
         "./brown/ca03",
@@ -40,5 +40,12 @@
         "./brown/ca38",
         "./brown/ca39",
         "./brown/ca40"
+    ],
+    "testing_corpuspath":[
+        "./brown/ca40",
+        "./brown/ca41",
+        "./brown/ca42",
+        "./brown/ca43",
+        "./brown/ca44"
     ]
 }
