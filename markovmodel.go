@@ -22,6 +22,7 @@ var (
 	previous string
 
 	previous_word []string
+	previous_tag  []string
 
 	TransitionProbabilities float64
 	EmissionProbabilities   float64
@@ -35,6 +36,10 @@ type MarkovTransition struct {
 }
 
 type MarkovEmission struct {
+	POSKey        string  `json:"poskey"`
+	Tag           string  `json:"tag"`
+	Word          string  `json:"word"`
+	Probabilities float64 `json:"probabilities"`
 }
 
 type MarkovModel struct {
@@ -43,6 +48,7 @@ type MarkovModel struct {
 	Transition     map[string]float64
 	Context        map[string]float64
 	TransitionData []MarkovTransition
+	EmissionData   []MarkovEmission
 }
 
 func GetCorpora(path string) (corpora *os.File, err error) {
@@ -122,6 +128,7 @@ func markovmodel() {
 			TransitionProbabilities = 0
 			fmt.Printf("T %v:%v", key, TransitionProbabilities)
 		} else {
+
 			TransitionProbabilities = value / Context[previous]
 			fmt.Printf("T %v:%v", key, TransitionProbabilities)
 		}

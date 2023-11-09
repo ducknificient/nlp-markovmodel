@@ -136,6 +136,41 @@ func main() {
 
 			fmt.Printf("\n")
 		}
+
+		/* print the transition probabilities*/
+		for key, value := range Emit {
+			//fmt.Printf("key,value : %v,%v", key, value)
+
+			previous_tag = strings.Split(key, " ")
+			if len(previous_tag) != 2 {
+				// Handle the case where the key does not contain a space
+				continue
+			}
+
+			tag = previous_tag[0]
+			word = previous_tag[1]
+
+			// if the tag is A , there a % that the word will e X
+
+			// Print the information
+			if Context[tag] == 0 {
+				EmissionProbabilities = 0
+				fmt.Printf("T %v:%v", key, EmissionProbabilities)
+			} else {
+				EmissionProbabilities = value / Context[tag]
+				fmt.Printf("T %v:%v", key, EmissionProbabilities)
+			}
+			td := MarkovEmission{
+				POSKey:        key,
+				Tag:           tag,
+				Word:          word,
+				Probabilities: EmissionProbabilities,
+			}
+
+			model.EmissionData = append(model.EmissionData, td)
+
+			fmt.Printf("\n")
+		}
 	}
 
 	// Marshal the struct to JSON
@@ -145,5 +180,13 @@ func main() {
 		return
 	}
 
+	// Marshal the struct to JSON
+	jsonEmission, err := json.Marshal(model.EmissionData)
+	if err != nil {
+		fmt.Println("Error marshaling JSON:", err)
+		return
+	}
+
 	saveJsonToFile("transition_probabilities", jsonData)
+	saveJsonToFile("emission_probabilities", jsonEmission)
 }
